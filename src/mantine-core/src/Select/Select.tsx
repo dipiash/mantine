@@ -88,6 +88,12 @@ export interface SelectProps
   /** Set to true to enable search */
   searchable?: boolean;
 
+  /** Restrict search input by RegExp */
+  searchPattern?: string;
+
+  /** Restrict search input by RegExp flags */
+  searchPatternFlags?: string;
+
   /** Allow to clear item */
   clearable?: boolean;
 
@@ -144,6 +150,8 @@ const defaultProps: Partial<SelectProps> = {
   filter: defaultFilter,
   maxDropdownHeight: 220,
   searchable: false,
+  searchPattern: undefined,
+  searchPatternFlags: 'gi',
   clearable: false,
   limit: Infinity,
   disabled: false,
@@ -181,6 +189,8 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>((props, ref) => 
     filter,
     maxDropdownHeight,
     searchable,
+    searchPattern,
+    searchPatternFlags,
     clearable,
     nothingFound,
     clearButtonLabel,
@@ -256,9 +266,15 @@ export const Select = forwardRef<HTMLInputElement, SelectProps>((props, ref) => 
   const [inputValue, setInputValue] = useState(selectedValue?.label || '');
 
   const handleSearchChange = (val: string) => {
-    setInputValue(val);
+    let preparedVal = val;
+
+    if (searchPattern) {
+      preparedVal = preparedVal.replace(new RegExp(searchPattern, searchPatternFlags), '');
+    }
+
+    setInputValue(preparedVal);
     if (searchable && typeof onSearchChange === 'function') {
-      onSearchChange(val);
+      onSearchChange(preparedVal);
     }
   };
 
