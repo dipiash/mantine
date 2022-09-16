@@ -25,7 +25,7 @@ function Demo() {
         label="Your favorite framework/library"
         placeholder="Pick one"
         searchable
-        searchPattern="[^a-zA-Z0-9_-+$@!*()=/\]"
+        searchPattern="[^a-zA-Z0-9_\-+$@!\*()=\/\\]"
         nothingFound="No options"
         data={['React', 'Angular', 'Svelte', 'Vue']}
       />
