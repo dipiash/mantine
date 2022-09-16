@@ -47,6 +47,12 @@ export interface MultiSelectProps
   /** Enable items searching */
   searchable?: boolean;
 
+  /** Restrict search input by RegExp */
+  searchPattern?: string;
+
+  /** Restrict search input by RegExp flags */
+  searchPatternFlags?: string;
+
   /** Function based on which items in dropdown are filtered */
   filter?(value: string, selected: boolean, item: SelectItem): boolean;
 
@@ -124,6 +130,8 @@ const defaultProps: Partial<MultiSelectProps> = {
   maxDropdownHeight: 220,
   shadow: 'sm',
   searchable: false,
+  searchPattern: undefined,
+  searchPatternFlags: 'gi',
   filter: defaultFilter,
   limit: Infinity,
   clearSearchOnChange: true,
@@ -168,6 +176,8 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>((props
     onFocus,
     onBlur,
     searchable,
+    searchPattern,
+    searchPatternFlags,
     placeholder,
     filter,
     limit,
@@ -245,8 +255,14 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>((props
   };
 
   const handleSearchChange = (val: string) => {
-    typeof onSearchChange === 'function' && onSearchChange(val);
-    setSearchValue(val);
+    let preparedVal = val;
+
+    if (searchPattern) {
+      preparedVal = preparedVal.replace(new RegExp(searchPattern, searchPatternFlags), '');
+    }
+
+    typeof onSearchChange === 'function' && onSearchChange(preparedVal);
+    setSearchValue(preparedVal);
   };
 
   const formattedData = data.map((item) =>
